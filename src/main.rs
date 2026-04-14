@@ -1,20 +1,9 @@
-use std::{env, fs, process};
+mod run;
 
-struct Config {
-    query: String,
-    file_path: String,
-}
+use run::*;
+use std::{env, process};
 
-impl Config {
-    fn build(args: &[String]) -> Result<Config, &'static str> {
-        if args.len() < 3 {
-            return Err("not enough arguments!");
-        }
-        let query = args[1].clone();
-        let file_path = args[2].clone();
-        Ok(Config { query, file_path })
-    }
-}
+use crate::run::Config;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -26,6 +15,8 @@ fn main() {
     println!("Seaching for the word: '{}'", config.query);
     println!("In file: '{}'", config.file_path);
 
-    let contents = fs::read_to_string(config.file_path).expect("Unable to read the file!");
-    println!("With text:\n{contents}");
+    if let Err(e) = run(config) {
+        println!("Application error, {}", e);
+        process::exit(1);
+    }
 }
